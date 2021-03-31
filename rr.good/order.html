@@ -1,0 +1,120 @@
+<style>.bottom-bar { display:none; } .s-delete-icon { display: inline-block; }</style>
+{$_show_cart = true}
+{$_cart_count = $wa->shop->cart->count()}
+
+{if empty($_cart_count)}
+    <div class="breadcrumbs">
+        <ul>
+            <li>{if $theme_settings.logo_link}<a href="{$theme_settings.logo_link}">{else}<a href="{$wa_app_url}">{/if}[`Home`]</a></li>
+            <li>[`Cart`]</li>
+
+        </ul>
+    </div>
+    <div class="s-cart-empty-wrapper">
+        <h3>[`Cart`]</h3>
+        <p>[`Your shopping cart is empty.`]</p>
+        <p>[`Promotions and special offers of products on the home page will help you make the right choice!`]</p>
+        <p>{if $theme_settings.logo_link}<a href="{$theme_settings.logo_link}" class="btn btn-primary">{else}<a href="{$wa_app_url}" class="btn btn-primary">{/if}[`Back to the store`]</a></p>
+    </div>
+    {*ORDER*}
+{else}
+
+    <h3>{$config.order.block_name|default:"[`Checkout`]"|escape}</h3>
+    <div class="s-order-page" id="js-order-page">
+            {if $theme_settings.cart_type == 2}
+        <div class="row reorder-xs">
+            <div class="col-lg-7">
+                <div class="s-order-column">
+                    <section class="s-order-section" id="js-order-form">
+                        <div class="s-section-header" id="wa-step-contact-section">
+                            <h3 class="wa-header">[`Контактная информация`]</h3>
+                        </div>
+                        <div class="s-section-body">
+                            {$wa->shop->checkout()->form([
+                            "DEBUG" => false,
+                            "wrapper" => "#js-order-form",
+                            "some_other_options" => "whatever"
+                            ])}
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                {if !empty($_show_cart)}
+                    <div class="s-order-column">
+                        <section class="s-order-section" id="js-order-cart">
+                            <div class="s-section-body">
+                                <div class="h3">{$config.cart.block_name|default:"[`Cart`]"|escape}</div>
+                                {$wa->shop->checkout()->cart([
+                                "DEBUG" => false,
+                                "wrapper" => "#js-order-cart",
+                                "some_other_options" => "whatever"
+                                ])}
+                            </div>
+                        </section>
+
+                    </div>
+                {/if}
+            </div>
+        </div>
+            {else}
+            <div class="row" style="display: flex;flex-direction: row-reverse;justify-content: space-between;">
+                    <div class="col-lg-12" style="width: 47%;padding: 1%;border: 1px solid #e9e9e9;">
+                        {if !empty($_show_cart)}
+                            <div class="s-order-column" style="margin-bottom:20px;">
+                                <section class="s-order-section" id="js-order-cart">
+                                    <div class="s-section-body">
+                                        <div class="h3">{$config.cart.block_name|default:"[`Cart`]"|escape}</div>
+                                        {$wa->shop->checkout()->cart([
+                                        "DEBUG" => false,
+                                        "wrapper" => "#js-order-cart",
+                                        "some_other_options" => "whatever"
+                                        ])}
+                                    </div>
+                                </section>
+
+                            </div>
+                        {/if}
+                    </div>
+                    <div class="col-lg-12" style="    width: 47%;padding: 1%;border: 1px solid #e9e9e9;">
+                        <div class="s-order-column">
+                            <section class="s-order-section" id="js-order-form">
+                                <div class="s-section-header" id="wa-step-contact-section">
+                                    <h3 class="wa-header">[`Контактная информация`]</h3>
+                                </div>
+                                <div class="s-section-body">
+                                    {$wa->shop->checkout()->form([
+                                    "DEBUG" => false,
+                                    "wrapper" => "#js-order-form",
+                                    "some_other_options" => "whatever"
+                                    ])}
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+            </div>
+            {/if}
+        </div>
+
+        <script>
+            ( function($) {
+                ( typeof window.ShopOrderPage === "function" ? init() : load().then(init) );
+                function load() {
+                    var deferred = $.Deferred();
+                    $.getScript("{$wa_theme_url}js/order.js?v={$wa->version()}", function() {
+                        deferred.resolve();
+                    });
+                    return deferred.promise();
+                }
+
+                function init() {
+                    new window.ShopOrderPage({
+                        $wrapper: $("#js-order-page"),
+                        urls: {
+                            "checkbox-icon": "{$wa_app_static_url}img/frontend/order/svg/sprite.svg#checkbox-yes"
+                        }
+                    });
+                }
+            })(jQuery);
+        </script>
+{/if}
